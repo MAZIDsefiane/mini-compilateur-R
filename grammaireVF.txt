@@ -1,0 +1,63 @@
+program : statement_list 
+
+statement_list : statement  { \n  statement }
+
+statement : id_term | print | type | if_else | while | repeat | for | £
+
+id_term :  ID post_id_rule
+
+post_id_rule : assignement | function_call | £
+
+assignement : affec_sym assignement _suite
+
+assignement _suite :  expression | function_def 
+
+affec_sym : = | <-
+
+expression : term { addop term }
+
+addop : + | - 
+
+term : fact { mulop fact }
+
+mulop : * | / 
+
+fact : ID | type | PO_token expression PF_token
+
+type : STR | NUM | BOOL | vect
+
+vect : c_token PO_token ( NUM {, NUM} | STR {, STR} | BOOL {, BOOL}) PF_token
+
+STR : "[a-Z][0-9][&-!]"
+
+BOOL : TRUE | FALSE 
+
+while : while PO_token cond PF_token while_suite
+
+while_suite : statement | AO_token statement_list AF_token
+
+if_else : if PO_token cond PF_token { \n } if_else_suite
+
+if_else_suite : statement | AO_token statement_list AF_token { else if PO_token cond PF_token AO_token statement_list AF_token } 
+									{ else AO_token statement_list AF_token }
+cond : expression { relop expression }
+
+relop : == | != | < | > | <= | >=
+
+print   : print PO_token expression PF_token
+
+function_def  : function PO_token parametre_list_def PF_token AO_token  statement_list AF_token
+
+function_call : PO_token parametre_list_call PF_token
+
+parametre_list_call  : expression { , expression } | function_call
+
+parametre_list_def : expression { , expression }
+
+PO_token : (
+
+PF_token : )
+
+AO_token : {
+
+AF_token : }
